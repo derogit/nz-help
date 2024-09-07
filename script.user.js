@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      1.2.0
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -109,6 +109,32 @@
     return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
+
+  // Функція для роботи з кукі
+  function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+
+  function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  const csrf_token = $('meta[name="csrf-token"]').attr("content");
+  const curren_journal_id = $('input[name="journal"]').val();
+
   $(document).ready(function () {
     // Додаємо чекбокси в кожен елемент td, вибраний селектором
     if (getUrlParameter("journal") && !getUrlParameter("schedule")) {
@@ -170,6 +196,217 @@
           location.reload(); // Перезавантаження сторінки для оновлення даних
         }
       }
+    });
+  });
+
+  // Додаємо кнопку в body
+  if (getUrlParameter("journal") && getUrlParameter("schedule") == null) {
+    $("body").append('<button id="openScheduler" style="position: absolute; top: 97px; right: 10px; z-index: 9999;">Додавання стовпчиків</button>');
+  }
+
+  $('head').append(`
+    <style>
+      #lessons_mapping_table td{
+        border-bottom: 1px solid;
+        padding: 10px 10px;
+      }
+    </style>
+  `);
+
+  let journalName = $(".journal-scores__title a").text();
+
+  $("#openScheduler").on("click", function () {
+    // Завантажуємо дані для селектів (уроки та кабінети) через AJAX
+    $.get(`https://nz.ua/journal/add-edit-lesson?journal=${curren_journal_id}`, function (data) {
+      const buzzerOptions = $(data).find("#osvitaschedulereal-buzzer_id option");
+      const roomOptions = $(data).find("#osvitaschedulereal-room_id option");
+
+      // Створюємо форму з динамічно підвантаженими селектами
+      $("body").append(`
+                  <div id="schedulerForm" style="position: absolute; top: 50px; right: 10px; z-index: 9999; background-color: white; padding: 20px; border: 1px solid black;">
+                      <label for="journal_id">Журнал: ${journalName}</label>
+                      <input type="hidden" name="journal_id" id="journal_id" value="${curren_journal_id}" />
+
+                      <br/>
+
+                      <label for="lesson_days"><b>Дати уроків</b> (кожен в новому рядку, <br/>формат: dd.mm.yyyy або dd.mm для поточного року):</label><br/>
+                      <textarea id="lesson_days" rows="10" cols="30"></textarea><br/>
+
+                    <table id="lessons_mapping_table" style="border-collapse: collapse">
+                        <tr>
+                            <td>Понеділок</td>
+                            <td>
+                                <select id="buzzer_id_mon">
+                                    <option selected value="none">Немає уроку</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Вівторок</td>
+                            <td>
+                                <select id="buzzer_id_tue">
+                                    <option selected value="none">Немає уроку</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Середа</td>
+                            <td>
+                                <select id="buzzer_id_wed">
+                                    <option selected value="none">Немає уроку</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Четвер</td>
+                            <td>
+                                <select id="buzzer_id_thu">
+                                    <option selected value="none">Немає уроку</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Пʼятниця</td>
+                            <td>
+                                <select id="buzzer_id_fri">
+                                    <option selected value="none">Немає уроку</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+
+                      <label for="room_id">Оберіть кабінет:</label><br/>
+                      <select id="room_id"></select><br/>
+                      <br/>
+
+                      <div id="results"></div>
+
+                      <button id="submitForm" style="
+                          background: #000;
+                          color: #fff;
+                          padding: 5px 30px;
+                          border-radius: 20px;">Відправити</button>
+                      <button id="closeForm" style="
+                          float: right;
+                          background: #000;
+                          color: #fff;
+                          padding: 5px 30px;
+                          border-radius: 20px;">Закрити</button>
+                  </div>
+              `);
+
+      // Наповнюємо селекти значеннями, отриманими через AJAX
+      buzzerOptions.each(function () {
+        let optionText = $(this)
+          .text()
+          .replace(/\s*\(.*?\)\s*/g, ""); // Видаляємо текст в дужках
+        let optionValue = $(this).val();
+
+        // Додаємо очищені опції в селект
+        $("#buzzer_id_mon,#buzzer_id_tue,#buzzer_id_wed,#buzzer_id_thu,#buzzer_id_fri").append(
+          $("<option>", {
+            value: optionValue,
+            text: optionText,
+          })
+        );
+      });
+
+      // Наповнюємо селект з кабінетами
+      roomOptions.each(function () {
+        $("#room_id").append($(this).clone());
+      });
+
+      // Встановлюємо збережений кабінет з кукі, якщо він є
+      const savedRoomId = getCookie("selectedRoom");
+      if (savedRoomId) {
+        $("#room_id").val(savedRoomId);
+      }
+
+      // Закриття форми
+      $("#closeForm").on("click", function () {
+        $("#schedulerForm").remove();
+      });
+
+      // Обробка відправлення форми
+      $("#submitForm").on("click", function () {
+        $("#preloader").show(); // Показуємо прелоадер
+        $("#results").empty(); // Очищаємо попередні результати
+        const journal_id = $("#journal_id").val();
+        const lesson_days = $("#lesson_days").val().trim().split("\n");
+
+        // Отримуємо дані з селектів для днів тижня
+        const lesson_mapping = {
+          mon: $("#buzzer_id_mon").val(),
+          tue: $("#buzzer_id_tue").val(),
+          wed: $("#buzzer_id_wed").val(),
+          thu: $("#buzzer_id_thu").val(),
+          fri: $("#buzzer_id_fri").val(),
+        };
+
+        const room_id = $("#room_id").val(); // Отримуємо вибраний кабінет
+
+        // Зберігаємо вибраний кабінет у кукі
+        setCookie("selectedRoom", room_id, 7); // Термін дії кукі — 7 днів
+
+        const lessons = [];
+        lesson_days.forEach(function (day) {
+          day = day.trim();
+          if (!day) return;
+
+          if (day.split(".").length < 3) {
+            day += "." + new Date().getFullYear();
+          }
+
+          const date = new Date(day.split(".").reverse().join("-"));
+          const day_of_week = date.toLocaleString("en-us", { weekday: "short" }).toLowerCase();
+
+          if (lesson_mapping[day_of_week] && lesson_mapping[day_of_week] !== "none") {
+            lessons.push({
+              date: day,
+              lesson_number: lesson_mapping[day_of_week],
+            });
+          }
+        });
+
+        let completedRequests = 0;
+
+        lessons.forEach(function (lesson) {
+          const lesson_date = lesson.date.split(".").reverse().join("-");
+          const data = {
+            _csrf: csrf_token,
+            "OsvitaScheduleReal[lesson_type_id]": 110,
+            lesson_date_alt: lesson.date,
+            "OsvitaScheduleReal[lesson_date]": lesson_date,
+            "OsvitaScheduleReal[repeate_type]": "not",
+            "OsvitaScheduleReal[buzzer_id]": lesson.lesson_number, // Використовуємо вибраний урок
+            "OsvitaScheduleReal[room_id]": room_id, // Використовуємо вибраний кабінет
+          };
+
+          $.post(`https://nz.ua/journal/add-edit-lesson?journal=${journal_id}`, data)
+            .done(function (response) {
+              response = JSON.parse(response);
+
+              if (response.status === "success") {
+                $("#results").append("<p>Урок додано: " + lesson_date + "</p>");
+              } else if (response.status === "failure") {
+                const errorDiv = $("<div>").html(response.html);
+                const errorMessage = errorDiv.find(".errorSummary ul li").text();
+                $("#results").append('<p style="color:red;">Помилка додавання: ' + lesson_date + " - " + errorMessage + "</p>");
+              }
+            })
+            .fail(function () {
+              $("#results").append('<p style="color:red;">Помилка додавання: ' + lesson_date + "</p>");
+            })
+            .always(function () {
+              completedRequests++;
+              if (completedRequests === lessons.length) {
+                $("#preloader").hide(); // Ховаємо прелоадер після завершення всіх запитів
+                $("#results").append("<p>Усі уроки оброблено.</p>");
+              }
+            });
+        });
+      });
     });
   });
 })();
