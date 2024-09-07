@@ -1,11 +1,12 @@
 (function () {
   "use strict";
   $.noConflict();
+
   // Styles
   $(".sidebar").width(40).addClass("collapsed");
   $(".sidebar .logo").after('<button id="toggle_sidebar" style="display: block; margin: 0 0px 20px 12px; background: #191919; color: #fff; opacity: 0.8"> < > </button>');
 
-  $(document).on("click", "#toggle_sidebar", function () {
+  $(document).on("click", "#toggle_sidebar", function ($) {
     if ($(".sidebar").hasClass("collapsed")) {
       $(".sidebar").width(160).removeClass("collapsed");
     } else {
