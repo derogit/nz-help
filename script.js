@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.js
@@ -40,5 +40,5 @@
     `<style> .dz-container li .rltv .dzc-dz.ecl-text-overflow span{ display: block; } .dz-container li .rltv .dzc-dz.ecl-text-overflow{ max-width: 195px } .scores-table__box{ max-height: unset; overflow: hidden; } .journal-scores-panel{ padding-bottom: 10px } .scores-table .point-table .dropdown .pop_toggle{ display: none; border-width: 0 10px 10px 0; } .pt-point:hover .dropdown .pop_toggle{ display: block; } .homework-table { overflow-x: unset; } .homework-container{ grid-template-columns: 124px 60px 47px minmax(410px, 1fr) 125px minmax(240px, 1fr) 180px 45px; } .journal-choose tr{ grid-template-columns: 0.4fr 1fr; } .journal-choose td a[href^="/journal/"]{ background: #000; padding: 10px 20px } .scores-table tr{ grid-template-rows: 25px; grid-template-columns: 40px 160px repeat(21, minmax(33px, 36px)); } .sidebar-support__link { padding: 5px; } .sidebar-nav__box{ oveflow: hidden; } </style>`
   );
 
-  
+
 })();
