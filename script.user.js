@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.0.7
+// @version      1.1.0
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -96,4 +96,80 @@
     }
 </style>`
   );
+
+  function getUrlParameter(name) {
+    // Створюємо регулярний вираз для пошуку параметра в URL
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+
+    // Виконуємо пошук у поточному URL
+    var results = regex.exec(window.location.search);
+
+    // Якщо параметр знайдено, повертаємо його значення, інакше - null
+    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  $(document).ready(function () {
+    // Додаємо чекбокси в кожен елемент td, вибраний селектором
+    if (getUrlParameter("journal") && !getUrlParameter("schedule")) {
+      $("#journalList thead td.pt-point").each(function () {
+        // Отримуємо поточне значення lesson-id із посилання всередині td
+        var lessonId = $(this).find("a").attr("href").split("schedule=")[1];
+
+        // Створюємо чекбокс і додаємо його перед посиланням
+        var checkbox = `<input type="checkbox" class="lesson-checkbox" data-schedule-id="${lessonId}">`;
+        $(this).prepend(checkbox);
+      });
+    }
+
+    // Додаємо кнопку-посилання "Видалити відмічені" в .journal-scores-panel__box
+    $(".journal-scores-panel__box").append('<a href="#" id="delete-selected" class="">X Видалити відзначені</a>');
+
+    // Обробник кліка на кнопку-посилання "Видалити відмічені"
+    $("#delete-selected").on("click", function (e) {
+      e.preventDefault(); // запобігаємо переходу за посиланням
+
+      // Збираємо всі відмічені чекбокси
+      var selectedCheckboxes = $(".lesson-checkbox:checked");
+
+      if (selectedCheckboxes.length === 0) {
+        alert("Будь ласка, виберіть хоча б один урок для видалення.");
+        return;
+      }
+
+      // Показ прелоадера
+      $("#preloader").show();
+
+      // Для кожного вибраного чекбокса відправляємо POST запит
+      var totalRequests = selectedCheckboxes.length;
+      var completedRequests = 0;
+
+      selectedCheckboxes.each(function () {
+        var scheduleId = $(this).data("schedule-id");
+
+        $.post("https://nz.ua/journal/delete-lesson", { schedule_id: scheduleId })
+          .done(function (response) {
+            // Індикація успішного виконання
+            completedRequests++;
+            checkCompletion();
+          })
+          .fail(function (error) {
+            // Індикація помилки
+            alert("Помилка при видаленні уроку з ID " + scheduleId);
+            completedRequests++;
+            checkCompletion();
+          });
+      });
+
+      // Функція перевірки завершення всіх запитів
+      function checkCompletion() {
+        if (completedRequests === totalRequests) {
+          // Приховуємо прелоадер
+          $("#preloader").hide();
+          alert("Усі запити оброблено.");
+          location.reload(); // Перезавантаження сторінки для оновлення даних
+        }
+      }
+    });
+  });
 })();
