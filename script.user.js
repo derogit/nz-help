@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      1.3.0
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -94,6 +94,55 @@
     .sidebar-nav__box {
         overflow: hidden;
     }
+    #phrases_list {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    #phrases_list li {
+      list-style: none;
+      margin: 10px 0;
+      display: block;
+      display: flex;
+    }
+    #phrases_list li a.quick-phrase,
+    #phrases_list li a.delete-phrase {
+      display: inline-block;
+      cursor: pointer;
+      color: #000;
+      border: 1px solid;
+      padding: 7px 20px;
+      border-radius: 20px 0 0 20px;
+      transition: color .3s, background .3s;
+    }
+    #phrases_list li a.quick-phrase:hover {
+      color: #fff;
+      background: #000;
+    }
+    #phrases_list li a.delete-phrase {
+      border-radius: 0 20px 20px 0;
+      padding: 7px 14px;
+    }
+    #phrases_list li a.delete-phrase:hover {
+      color: #fff !important;
+      background: red;
+    }
+    #addPhrase{
+      display: inline-block;
+      cursor: pointer;
+      padding: 2px;
+      color: #000;
+      font-size: 20px;
+      border:1px solid;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      transition: color .3s, background .3s;
+    }
+    #addPhrase:hover{
+      color: #fff;
+      background: #000;
+    }
 </style>`
   );
 
@@ -108,7 +157,6 @@
     // Якщо параметр знайдено, повертаємо його значення, інакше - null
     return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
-
 
   // Функція для роботи з кукі
   function setCookie(name, value, days) {
@@ -204,7 +252,7 @@
     $("body").append('<button id="openScheduler" style="position: absolute; top: 97px; right: 10px; z-index: 9999;">Додавання стовпчиків</button>');
   }
 
-  $('head').append(`
+  $("head").append(`
     <style>
       #lessons_mapping_table td{
         border-bottom: 1px solid;
@@ -409,4 +457,81 @@
       });
     });
   });
+
+  // Збереження списку фраз у кукі
+  function savePhrasesToCookies(phrases) {
+    setCookie("quick_responses", JSON.stringify(phrases), 7);
+  }
+
+  // Отримання списку фраз із кукі
+  function getPhrasesFromCookies() {
+    const cookieValue = getCookie("quick_responses");
+    return cookieValue ? JSON.parse(cookieValue) : [];
+  }
+
+  // Виведення списку фраз
+  function renderPhrases() {
+    const phrases = getPhrasesFromCookies();
+    const phrasesList = phrases
+      .map(
+        (phrase, index) => `
+      <li>
+        <a class="quick-phrase">${phrase}</a>
+        <a class="delete-phrase" data-index="${index}" style="color: red;">Х</a>
+      </li>
+    `
+      )
+      .join("");
+
+    $("#phrases_list").html(phrasesList);
+
+    // Обробка кліку на фразу для вставки в поле відповіді
+    $(".quick-phrase").on("click", function () {
+      const text = $(this).text();
+      $(".reply__text").val($(".reply__text").val() + text);
+    });
+
+    // Обробка видалення фраз
+    $(".delete-phrase").on("click", function () {
+      const index = $(this).data("index");
+      const updatedPhrases = phrases.filter((_, i) => i !== index);
+      savePhrasesToCookies(updatedPhrases);
+      renderPhrases();
+    });
+  }
+
+  // Додавання нової фрази
+  function addNewPhrase() {
+    const newPhrase = prompt("Введіть нову фразу:");
+    if (newPhrase) {
+      const phrases = getPhrasesFromCookies();
+      phrases.push(newPhrase);
+      savePhrasesToCookies(phrases);
+      renderPhrases();
+    }
+  }
+
+  // Перевірка наявності блоку .reply__text
+  if ($(".reply__text").length) {
+    // Додаємо кнопку "Керувати швидкими відповідями"
+    //    $('.container_reply').append('<a id="manageQuickReplies" style="margin-top: 10px;">Керувати швидкими відповідями</a>');
+
+    // Обробка додавання нової фрази
+    $(document).on("click", "#addPhrase", function () {
+      addNewPhrase();
+    });
+
+    // Додаємо відображення списку фраз перед блоком .reply__text
+    $(".reply__text").before(`
+      <h4>Швидка відповідь:             <a id="addPhrase" style="margin-top: 10px;">+</a></h4>
+      <ul id="phrases_list">
+
+
+            </ul>
+
+    `);
+
+    // Рендеримо список фраз
+    renderPhrases();
+  }
 })();
