@@ -97,6 +97,7 @@
     #phrases_list {
       display: flex;
       flex-wrap: wrap;
+      gap: 10px;
     }
     #phrases_list li {
       list-style: none;
@@ -127,6 +128,7 @@
       background: red;
     }
     #addPhrase{
+      font-weight: 300;
       display: inline-block;
       cursor: pointer;
       padding: 2px;
