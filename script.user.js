@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.3.0
+// @version      1.3.1
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -145,6 +145,33 @@
       color: #fff;
       background: #000;
     }
+
+    .nav-open:not(:checked) ~ .sidebar .sidebar-nav__label {
+      max-width: unset !important;
+    }
+    .sidebar {
+      max-width: unset !important;
+    }
+    .sidebar.collapsed span.sidebar-nav__info {
+      transform: translateX(-30px) !important;
+      font-size: 12px;
+      padding: 2px 5px;
+    }
+    .sidebar:not(.collapsed) span.sidebar-nav__info {
+      transform: translateX(0) !important;
+      font-size: 12px;
+      padding: 2px 5px;
+    }
+    a[href*="old.nz.ua"] {
+      font-size: 8px;
+      color: #fff;
+      line-height: 150%;
+      display: block;
+    }
+    .nav-open:not(:checked) ~ .sidebar .sidebar-support__label {
+      max-width: unset;
+    }
+
 </style>`
   );
 
