@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.3.1
+// @version      1.3.2
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -424,7 +424,7 @@
         const room_id = $("#room_id").val(); // Отримуємо вибраний кабінет
 
         // Зберігаємо вибраний кабінет у кукі
-        setCookie("selectedRoom", room_id, 7); // Термін дії кукі — 7 днів
+        setCookie("selectedRoom", room_id, 365); // Термін дії кукі — 7 днів
 
         const lessons = [];
         lesson_days.forEach(function (day) {
@@ -489,7 +489,7 @@
 
   // Збереження списку фраз у кукі
   function savePhrasesToCookies(phrases) {
-    setCookie("quick_responses", JSON.stringify(phrases), 7);
+    setCookie("quick_responses", JSON.stringify(phrases), 365);
   }
 
   // Отримання списку фраз із кукі
