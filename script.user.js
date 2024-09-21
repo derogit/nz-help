@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NZ HELP
 // @namespace    http://tampermonkey.net/
-// @version      1.3.2
+// @version      1.3.3
 // @description  Additional functional for NZ
 // @author       Danylo Tkachuk
 // @updateURL    https://raw.githubusercontent.com/derogit/nz-help/main/script.user.js
@@ -33,8 +33,8 @@
     }
   });
 
-  $(".homework-row--header .homework__item:nth-child(2)").text("№");
-  $(".homework-row--header .homework__item:nth-child(3)").text("Дз");
+  $(".homework-row--header .homework__item:nth-child(3)").text("№");
+  $(".homework-row--header .homework__item:nth-child(4)").text("Дз");
 
   $("head").append(
     `
@@ -70,7 +70,7 @@
     }
 
     .homework-container {
-        grid-template-columns: 124px 60px 47px minmax(410px, 1fr) 125px minmax(240px, 1fr) 180px 45px;
+        grid-template-columns: 45px 124px 60px 47px minmax(410px, 1fr) 125px minmax(240px, 1fr) 180px ;
     }
 
     .journal-choose tr {
@@ -278,7 +278,7 @@
 
   // Додаємо кнопку в body
   if (getUrlParameter("journal") && getUrlParameter("schedule") == null) {
-    $("body").append('<button id="openScheduler" style="position: absolute; top: 97px; right: 10px; z-index: 9999;">Додавання стовпчиків</button>');
+    $("body").append('<button id="openScheduler" style="position: absolute; top: 62px; right: 10px; z-index: 9999;">Додавання стовпчиків</button>');
   }
 
   $("head").append(`
