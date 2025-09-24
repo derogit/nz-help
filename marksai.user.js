@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Set Marks AI
 // @namespace    http://tampermonkey.net/
-// @version      2024-09-24
+// @version      2025-09-24
 // @description  try to take over the world!
 // @author       You
 // @match        https://nz.ua/journal/index?journal=*
