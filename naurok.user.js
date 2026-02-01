@@ -4,7 +4,7 @@
 // @version      2024-03-21
 // @description  Extract names and grades and copy to clipboard!
 // @author       You
-// @match        https://naurok.com.ua/test/homework*
+// @match        https://naurok.com.ua/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=naurok.com.ua
 // @grant        none
@@ -12,6 +12,9 @@
 
 (function() {
     'use strict';
+
+    if($('#homework-deadline_day').length)
+        $('#homework-deadline_day option:first-child').val('2026-06-30').text('30 червня 2026')
 
     function collectNames() {
 
