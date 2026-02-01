@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy results
 // @namespace    http://tampermonkey.net/
-// @version      2024-03-21
+// @version      2026-02-01
 // @description  Extract names and grades and copy to clipboard!
 // @author       You
 // @match        https://naurok.com.ua/*
