@@ -58,7 +58,7 @@
 
     .scores-table .point-table .dropdown .pop_toggle {
         display: none;
-        border-width: 0 10px 10px 0;
+        border-width: 0 7px 7px 0;
     }
 
     .pt-point:hover .dropdown .pop_toggle {
