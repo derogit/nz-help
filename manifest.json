@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "NZ Help",
+  "version": "2.0.2",
+  "description": "Інструменти для швидкої роботи з електронним журналом nz.ua: масові операції з уроками, нотатки, швидкі відповіді.",
+  "author": "Danylo Tkachuk",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://nz.ua/*",
+    "https://testix.com.ua/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "action": {
+    "default_title": "NZ Help — налаштування"
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://nz.ua/*"],
+      "run_at": "document_idle",
+      "css": ["src/styles/ui.css"],
+      "js": [
+        "src/core/utils.js",
+        "src/core/storage.js",
+        "src/core/catalog.js",
+        "src/core/net.js",
+        "src/core/ui.js",
+        "src/core/registry.js",
+        "src/modules/site-tweaks.js",
+        "src/modules/sidebar-toggle.js",
+        "src/modules/lesson-columns.js",
+        "src/modules/lesson-cleanup.js",
+        "src/modules/homework-fill.js",
+        "src/modules/homework-notes.js",
+        "src/modules/homework-preview.js",
+        "src/modules/students-copy.js",
+        "src/modules/students-highlight.js",
+        "src/modules/quick-replies.js",
+        "src/content/bootstrap.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/styles/site-tweaks.css",
+        "src/styles/sidebar.css"
+      ],
+      "matches": ["https://nz.ua/*"]
+    }
+  ]
+}

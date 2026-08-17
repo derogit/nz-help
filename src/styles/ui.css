@@ -1,0 +1,929 @@
+/* ==========================================================================
+   NZ Help — design system
+   Ledger + red pen: quiet paper surfaces, mono utility labels, one red accent
+   used only for marks, counters and destructive actions.
+   Every selector is namespaced with .nz-* to stay out of the journal's way.
+   ========================================================================== */
+
+.nz-root {
+  --nz-ink: #15181d;
+  --nz-ink-soft: #2a2f38;
+  --nz-paper: #ffffff;
+  --nz-mist: #f5f7f9;
+  --nz-line: #e3e7ec;
+  --nz-muted: #6a7480;
+  --nz-pen: #d6323c;
+  --nz-pen-soft: #fcecec;
+  --nz-ok: #187a4c;
+  --nz-ok-soft: #eaf6ef;
+
+  --nz-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --nz-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --nz-radius: 12px;
+  --nz-radius-sm: 8px;
+  --nz-shadow: 0 18px 48px rgba(15, 18, 24, 0.18), 0 0 0 1px rgba(15, 18, 24, 0.06);
+  --nz-shadow-sm: 0 8px 24px rgba(15, 18, 24, 0.14), 0 0 0 1px rgba(15, 18, 24, 0.06);
+  --nz-speed: 180ms;
+
+  --nz-z-launcher: 2147479000;
+  --nz-z-overlay: 2147480000;
+  --nz-z-toast: 2147481000;
+  --nz-z-hint: 2147482000;
+
+  font-family: var(--nz-font);
+  color: var(--nz-ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.nz-root *,
+.nz-root *::before,
+.nz-root *::after {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.nz-root :focus-visible {
+  outline: 2px solid var(--nz-pen);
+  outline-offset: 2px;
+}
+
+/* --- typography ---------------------------------------------------------- */
+
+.nz-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--nz-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nz-muted);
+}
+
+/* Signature detail: a short red pen stroke marks every label. */
+.nz-eyebrow::before {
+  content: "";
+  width: 12px;
+  height: 2px;
+  background: var(--nz-pen);
+  flex: none;
+}
+
+.nz-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--nz-ink-soft);
+}
+
+.nz-text--muted {
+  color: var(--nz-muted);
+}
+
+.nz-counter {
+  margin-left: auto;
+  font-family: var(--nz-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--nz-pen);
+}
+
+.nz-preview {
+  margin: 0;
+  padding: 12px 14px;
+  max-height: 160px;
+  overflow: auto;
+  background: var(--nz-mist);
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+  font-family: var(--nz-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--nz-ink-soft);
+}
+
+/* --- controls ------------------------------------------------------------ */
+
+.nz-root .nz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+  background: var(--nz-paper);
+  color: var(--nz-ink);
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--nz-speed), border-color var(--nz-speed), color var(--nz-speed), transform var(--nz-speed);
+}
+
+.nz-root .nz-btn:hover:not(:disabled) {
+  background: var(--nz-mist);
+}
+
+.nz-root .nz-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.nz-root .nz-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.nz-root .nz-btn--primary {
+  background: var(--nz-ink);
+  border-color: var(--nz-ink);
+  color: #fff;
+}
+
+.nz-root .nz-btn--primary:hover:not(:disabled) {
+  background: var(--nz-ink-soft);
+}
+
+.nz-root .nz-btn--danger {
+  background: var(--nz-pen);
+  border-color: var(--nz-pen);
+  color: #fff;
+}
+
+.nz-root .nz-btn--danger:hover:not(:disabled) {
+  background: #bf2b34;
+}
+
+.nz-root .nz-btn--quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--nz-muted);
+  padding: 0 10px;
+  min-height: 30px;
+}
+
+.nz-root .nz-btn--quiet:hover:not(:disabled) {
+  background: var(--nz-mist);
+  color: var(--nz-ink);
+}
+
+.nz-root .nz-icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--nz-radius-sm);
+  background: transparent;
+  color: var(--nz-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--nz-speed), color var(--nz-speed);
+}
+
+.nz-root .nz-icon-btn:hover:not(:disabled) {
+  background: var(--nz-pen-soft);
+  color: var(--nz-pen);
+}
+
+.nz-root .nz-input {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+  background: var(--nz-paper);
+  color: var(--nz-ink);
+  font-size: 13px;
+  transition: border-color var(--nz-speed), box-shadow var(--nz-speed);
+}
+
+.nz-root .nz-input:focus {
+  border-color: var(--nz-ink);
+  box-shadow: 0 0 0 3px rgba(21, 24, 29, 0.08);
+  outline: none;
+}
+
+.nz-root .nz-input--narrow {
+  max-width: 110px;
+}
+
+.nz-root .nz-textarea {
+  min-height: 88px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: var(--nz-mono);
+  font-size: 12.5px;
+}
+
+.nz-root .nz-select {
+  appearance: none;
+  padding-right: 30px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--nz-muted) 50%),
+    linear-gradient(135deg, var(--nz-muted) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 15px, calc(100% - 11px) 15px;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.nz-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nz-field__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--nz-ink);
+}
+
+.nz-field__hint {
+  font-size: 11.5px;
+  color: var(--nz-muted);
+}
+
+.nz-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.nz-row > .nz-field {
+  flex: 1 1 200px;
+}
+
+.nz-row--equal > .nz-field {
+  flex: 1 1 260px;
+}
+
+.nz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 14px;
+  background: var(--nz-mist);
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+}
+
+/* --- modal --------------------------------------------------------------- */
+
+.nz-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--nz-z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(17, 20, 26, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity var(--nz-speed) ease;
+}
+
+.nz-overlay.is-visible {
+  opacity: 1;
+}
+
+.nz-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  background: var(--nz-paper);
+  border-radius: var(--nz-radius);
+  box-shadow: var(--nz-shadow);
+  overflow: hidden;
+  transform: translateY(8px) scale(0.985);
+  transition: transform var(--nz-speed) cubic-bezier(0.32, 1.3, 0.6, 1);
+}
+
+.nz-overlay.is-visible .nz-modal {
+  transform: none;
+}
+
+.nz-modal--sm { max-width: 420px; }
+.nz-modal--md { max-width: 560px; }
+.nz-modal--lg { max-width: 760px; }
+.nz-modal--xl { max-width: 1000px; }
+
+.nz-modal.is-busy {
+  cursor: progress;
+}
+
+.nz-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--nz-line);
+  background: var(--nz-mist);
+}
+
+.nz-modal__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nz-modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--nz-ink);
+}
+
+.nz-modal__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.nz-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  overflow: auto;
+}
+
+.nz-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--nz-line);
+  background: var(--nz-mist);
+}
+
+/* --- log panel ----------------------------------------------------------- */
+
+.nz-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+  background: var(--nz-paper);
+}
+
+.nz-log__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nz-log__meter {
+  font-family: var(--nz-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--nz-muted);
+}
+
+.nz-log__bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--nz-line);
+  overflow: hidden;
+}
+
+.nz-log__bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--nz-ink);
+  transition: width var(--nz-speed) linear;
+}
+
+.nz-log__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 190px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nz-log__item {
+  padding: 6px 10px 6px 22px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  position: relative;
+  background: var(--nz-mist);
+  color: var(--nz-ink-soft);
+}
+
+.nz-log__item::before {
+  position: absolute;
+  left: 8px;
+  font-family: var(--nz-mono);
+}
+
+.nz-log__item--ok { background: var(--nz-ok-soft); }
+.nz-log__item--ok::before { content: "✓"; color: var(--nz-ok); }
+.nz-log__item--error { background: var(--nz-pen-soft); color: #8f2027; }
+.nz-log__item--error::before { content: "✕"; color: var(--nz-pen); }
+.nz-log__item--info::before { content: "·"; color: var(--nz-muted); }
+
+/* --- toasts -------------------------------------------------------------- */
+
+.nz-toasts {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--nz-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.nz-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(460px, 90vw);
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: var(--nz-ink);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: var(--nz-shadow-sm);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--nz-speed), transform var(--nz-speed);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.nz-toast.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.nz-toast__mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  flex: none;
+}
+
+.nz-toast--success .nz-toast__mark { background: #5fd39a; }
+.nz-toast--error .nz-toast__mark { background: var(--nz-pen); }
+.nz-toast--info .nz-toast__mark { background: #f0c14b; }
+
+/* --- blocking loader ----------------------------------------------------- */
+
+.nz-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--nz-z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 20, 26, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity var(--nz-speed);
+}
+
+.nz-loader.is-visible {
+  opacity: 1;
+}
+
+.nz-loader__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  border-radius: var(--nz-radius);
+  background: var(--nz-paper);
+  box-shadow: var(--nz-shadow);
+  font-size: 13px;
+}
+
+.nz-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--nz-line);
+  border-top-color: var(--nz-pen);
+  border-radius: 50%;
+  animation: nz-spin 0.7s linear infinite;
+  flex: none;
+}
+
+@keyframes nz-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- page tools launcher ------------------------------------------------- */
+
+.nz-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: var(--nz-z-launcher);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.nz-fab {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: var(--nz-ink);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--nz-shadow-sm);
+  transition: transform var(--nz-speed), background var(--nz-speed);
+}
+
+.nz-fab:hover {
+  transform: translateY(-1px);
+  background: var(--nz-ink-soft);
+}
+
+.nz-fab__label {
+  font-family: var(--nz-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.nz-fab__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--nz-pen);
+  color: #fff;
+  font-family: var(--nz-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  line-height: 18px;
+}
+
+.nz-launcher__menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(300px, calc(100vw - 40px));
+  padding: 12px;
+  border-radius: var(--nz-radius);
+  background: var(--nz-paper);
+  box-shadow: var(--nz-shadow);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--nz-speed), transform var(--nz-speed);
+}
+
+.nz-launcher.is-open .nz-launcher__menu {
+  opacity: 1;
+  transform: none;
+}
+
+.nz-launcher__menu .nz-eyebrow {
+  padding: 2px 8px 8px;
+}
+
+.nz-launcher__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 10px;
+  border: none;
+  border-radius: var(--nz-radius-sm);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--nz-speed);
+}
+
+.nz-launcher__item:hover {
+  background: var(--nz-mist);
+}
+
+.nz-launcher__label {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--nz-ink);
+}
+
+.nz-launcher__hint {
+  font-size: 11.5px;
+  color: var(--nz-muted);
+}
+
+/* --- tooltip and popover ------------------------------------------------- */
+
+.nz-tooltip {
+  position: fixed;
+  z-index: var(--nz-z-hint);
+  max-width: 300px;
+  padding: 9px 12px;
+  border-radius: var(--nz-radius-sm);
+  background: var(--nz-ink);
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  box-shadow: var(--nz-shadow-sm);
+  opacity: 0;
+  transition: opacity var(--nz-speed);
+  pointer-events: none;
+}
+
+.nz-tooltip.is-visible {
+  opacity: 1;
+}
+
+.nz-popover {
+  position: fixed;
+  z-index: var(--nz-z-hint);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--nz-radius-sm);
+  background: var(--nz-paper);
+  box-shadow: var(--nz-shadow);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--nz-speed), transform var(--nz-speed);
+}
+
+.nz-popover.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.nz-swatches {
+  display: flex;
+  gap: 6px;
+}
+
+.nz-swatch {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--nz-line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform var(--nz-speed), box-shadow var(--nz-speed);
+}
+
+.nz-swatch:hover {
+  transform: translateY(-1px);
+}
+
+.nz-swatch.is-active {
+  box-shadow: 0 0 0 2px var(--nz-ink);
+}
+
+/* --- quick replies panel ------------------------------------------------- */
+
+.nz-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 14px;
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius);
+  background: var(--nz-paper);
+}
+
+.nz-quick__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nz-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nz-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--nz-line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--nz-paper);
+}
+
+.nz-chip__use,
+.nz-chip__remove {
+  border: none;
+  background: transparent;
+  color: var(--nz-ink);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background var(--nz-speed), color var(--nz-speed);
+}
+
+.nz-chip__use {
+  padding: 7px 14px;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nz-chip__use:hover {
+  background: var(--nz-ink);
+  color: #fff;
+}
+
+.nz-chip__remove {
+  padding: 7px 11px;
+  border-left: 1px solid var(--nz-line);
+  color: var(--nz-muted);
+}
+
+.nz-chip__remove:hover {
+  background: var(--nz-pen);
+  color: #fff;
+}
+
+/* --- answer preview frame ------------------------------------------------ */
+
+.nz-modal--xl .nz-modal__body {
+  padding: 0;
+}
+
+.nz-frame__wrap {
+  position: relative;
+  height: min(72vh, 660px);
+  background: var(--nz-paper);
+}
+
+.nz-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.nz-frame__state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--nz-paper);
+}
+
+/* --- in-page controls injected into the journal -------------------------- */
+
+/* The header cell is narrow and its content is centred by the site — the checkbox
+   gets its own line above the lesson date instead of fighting for the same row. */
+#journalList td.pt-point:has(> .nz-lesson-check) {
+  overflow: visible;
+}
+
+/* A <button>, not a checkbox: the site hides bare checkboxes, so the box, the
+   tick and the checked state are drawn here from scratch. Site button styles are
+   overridden explicitly, because this element lives inside the site's own table. */
+.nz-lesson-check {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0 auto 2px;
+  padding: 0;
+  border: 1px solid #9aa3ad;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: none;
+  color: transparent;
+  font: 700 10px/12px system-ui, -apple-system, "Segoe UI", sans-serif;
+  text-align: center;
+  cursor: pointer;
+  transition: background 140ms, border-color 140ms;
+}
+
+.nz-lesson-check::before {
+  content: "✓";
+  display: block;
+}
+
+.nz-lesson-check:hover {
+  border-color: #d6323c;
+}
+
+.nz-lesson-check.is-checked {
+  background: #d6323c !important;
+  border-color: #d6323c;
+  color: #fff;
+}
+
+.nz-lesson-check:focus-visible {
+  outline: 2px solid #d6323c;
+  outline-offset: 1px;
+}
+
+/* Bare icon: no box, no label — the note glyph itself is the button. */
+.nz-note-btn {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 18px;
+  margin-top: -13px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: #8a94a0;
+  line-height: 0;
+  cursor: pointer;
+  transition: color 180ms, transform 180ms;
+}
+
+.nz-note-btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.nz-note-btn:hover {
+  color: #15181d;
+  transform: scale(1.12);
+}
+
+.nz-note-btn.has-note {
+  color: #d1971a;
+}
+
+.nz-note-btn:focus-visible {
+  outline: 2px solid #15181d;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.nz-student-anchor {
+  cursor: pointer;
+}
+
+/* --- responsive and motion preferences ---------------------------------- */
+
+@media (max-width: 640px) {
+  .nz-overlay { padding: 12px; }
+  .nz-modal__body { padding: 14px; }
+  .nz-launcher { right: 12px; bottom: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nz-root *,
+  .nz-overlay,
+  .nz-modal,
+  .nz-toast,
+  .nz-launcher__menu {
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+  }
+}

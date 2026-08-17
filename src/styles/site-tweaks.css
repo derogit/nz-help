@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Journal layout overrides.
+   These rules touch nz.ua markup directly: they widen the working area and stop
+   the grade and homework tables from being cropped.
+   Injected only while the "compact journal layout" module is enabled.
+   ========================================================================== */
+
+.wrapper {
+  max-width: unset;
+}
+
+/* Homework list: wider topic and task columns, no horizontal clipping. */
+.homework-table {
+  overflow-x: unset;
+}
+
+.homework-container {
+  grid-template-columns: 45px 124px 60px 47px minmax(410px, 1fr) 125px minmax(240px, 1fr) 180px;
+}
+
+.dz-container li .rltv .dzc-dz.ecl-text-overflow {
+  max-width: 195px;
+}
+
+.dz-container li .rltv .dzc-dz.ecl-text-overflow span {
+  display: block;
+}
+
+/* Grade table: show every row instead of an inner scroll area. */
+.scores-table__box {
+  max-height: unset;
+  overflow: hidden;
+}
+
+.scores-table tr {
+  grid-template-rows: 25px;
+  grid-template-columns: 40px 160px repeat(21, minmax(33px, 36px));
+}
+
+.journal-scores-panel {
+  padding-bottom: 10px;
+}
+
+/* Grade dropdown arrow only appears on the cell being hovered. */
+.scores-table .point-table .dropdown .pop_toggle {
+  display: none;
+  border-width: 0 7px 7px 0;
+}
+
+.pt-point:hover .dropdown .pop_toggle {
+  display: block;
+}
+
+/* Journal picker: bigger click targets. */
+.journal-choose tr {
+  grid-template-columns: 0.4fr 1fr;
+}
+
+.journal-choose td a[href^="/journal/"] {
+  background: #000;
+  padding: 10px 20px;
+}

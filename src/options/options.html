@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NZ Help — налаштування</title>
+    <link rel="stylesheet" href="../styles/ui.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body class="nz-root">
+    <main class="page">
+      <header class="page__head">
+        <p class="nz-eyebrow">Розширення для nz.ua</p>
+        <h1 class="page__title">NZ Help</h1>
+        <p class="nz-text nz-text--muted">
+          Кожен інструмент можна вимкнути окремо. Зміни діють після перезавантаження сторінки журналу.
+        </p>
+        <p class="page__version" id="version"></p>
+      </header>
+
+      <div id="groups" class="groups"></div>
+
+      <section class="card">
+        <p class="nz-eyebrow">Збережені дані</p>
+        <div class="data" id="data"></div>
+      </section>
+    </main>
+
+    <script src="../core/utils.js"></script>
+    <script src="../core/storage.js"></script>
+    <script src="../core/catalog.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

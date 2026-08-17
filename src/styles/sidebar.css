@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Sidebar collapsing.
+   Injected only while the "collapsible sidebar" module is enabled.
+   ========================================================================== */
+
+.nz-sidebar-toggle {
+  display: block;
+  margin: 0 0 16px 8px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background 180ms, border-color 180ms;
+}
+
+.nz-sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* The site caps these widths, which blocks both collapsed and expanded states. */
+.sidebar,
+.nav-open:not(:checked) ~ .sidebar .sidebar-nav__label,
+.nav-open:not(:checked) ~ .sidebar .sidebar-support__label {
+  max-width: unset !important;
+}
+
+.sidebar-nav__box {
+  overflow: hidden;
+}
+
+.sidebar-support__link {
+  padding: 5px;
+}
+
+/* Badges (unread counters) have to move with the rail. */
+.sidebar span.sidebar-nav__info {
+  font-size: 12px;
+  padding: 2px 5px;
+  transform: translateX(0) !important;
+}
+
+.sidebar.nz-sidebar--collapsed span.sidebar-nav__info {
+  transform: translateX(-30px) !important;
+}
+
+/* The legacy journal link is a footnote, not a menu item. */
+.sidebar a[href*="old.nz.ua"] {
+  display: block;
+  font-size: 8px;
+  line-height: 150%;
+  color: #fff;
+}
