@@ -930,6 +930,108 @@
   border-radius: 3px;
 }
 
+/* Row button lives in the site's markup, outside .nz-root — colours are literal. */
+.nz-testix-btn {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border: 1px solid #d8dde3;
+  border-radius: 10px;
+  background: #f5f7f9;
+  color: #6a7480;
+  font-size: 11px;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: color 180ms, background 180ms, border-color 180ms;
+}
+
+.nz-testix-btn:hover {
+  color: #15181d;
+  border-color: #b9c0c9;
+}
+
+.nz-testix-btn.has-link {
+  border-color: #187a4c;
+  background: #eaf6ef;
+  color: #187a4c;
+}
+
+/* Journal column header: appears only on lessons that have a test pinned. */
+.nz-testix-tx {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 4px;
+  border: 1px solid #15181d;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #15181d;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 15px;
+  cursor: pointer;
+  transition: background 180ms, color 180ms;
+}
+
+.nz-testix-tx:hover {
+  background: #15181d;
+  color: #ffffff;
+}
+
+/* --- Testix results table ------------------------------------------------ */
+
+.nz-testix {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nz-testix__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.nz-testix__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) 84px minmax(140px, 1.4fr) minmax(120px, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--nz-mist);
+}
+
+.nz-testix__row > * {
+  min-width: 0;
+}
+
+.nz-testix__row.is-unmatched {
+  background: var(--nz-pen-soft);
+}
+
+.nz-testix__name {
+  font-size: 13px;
+  color: var(--nz-ink-soft);
+}
+
+.nz-testix__attempts {
+  color: var(--nz-muted);
+  font-size: 12px;
+}
+
+.nz-testix__hint {
+  font-size: 12px;
+  color: var(--nz-muted);
+}
+
+.nz-testix__hint.is-warning {
+  color: var(--nz-pen);
+}
+
 .nz-student-anchor {
   cursor: pointer;
 }

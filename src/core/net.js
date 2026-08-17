@@ -17,6 +17,17 @@
     return url.startsWith('http') ? url : ORIGIN + (url.startsWith('/') ? url : `/${url}`);
   }
 
+  /**
+   * The link API answers 200 even when it refuses the request and puts the
+   * verdict in the body, so a resolved promise is not yet a success.
+   */
+  function unwrap(data) {
+    if (data && data.success === false) {
+      throw new Error(data.error || data.message || 'Сервер відхилив запит');
+    }
+    return data;
+  }
+
   function encode(data) {
     const body = new URLSearchParams();
     for (const [key, value] of Object.entries(data)) {
@@ -91,6 +102,24 @@
       },
       async save(schedule, note) {
         return net.sendToWorker('notes.save', { schedule, note });
+      },
+    },
+
+    /** Testix API: the results link pinned to a lesson, and the results themselves. */
+    testix: {
+      async get(schedule) {
+        return unwrap(await net.sendToWorker('testix.get', { schedule }));
+      },
+      /** An empty url unpins the test: the server drops the row. */
+      async save(schedule, url) {
+        return unwrap(await net.sendToWorker('testix.save', { schedule, url }));
+      },
+      /** Links for many lessons at once, so the journal needs one request. */
+      async list(schedules) {
+        return unwrap(await net.sendToWorker('testix.list', { schedules: [].concat(schedules).join(',') }));
+      },
+      async results(url) {
+        return net.sendToWorker('testix.results', { url });
       },
     },
 

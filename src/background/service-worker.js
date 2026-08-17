@@ -1,18 +1,55 @@
 /**
  * NZ Help — service worker.
  *
- * Owns every cross-origin request (the notes API), so content scripts never need
- * cross-origin permissions of their own. Message contract:
- *   { type: 'notes.get',  payload: { schedule } }        -> { ok, data }
- *   { type: 'notes.save', payload: { schedule, note } }  -> { ok, data }
+ * Owns every cross-origin request (the notes and Testix APIs), so content scripts
+ * never need cross-origin permissions of their own. Message contract:
+ *   { type: 'notes.get',       payload: { schedule } }        -> { ok, data }
+ *   { type: 'notes.save',      payload: { schedule, note } }  -> { ok, data }
+ *   { type: 'testix.get',      payload: { schedule } }        -> { ok, data }
+ *   { type: 'testix.save',     payload: { schedule, url } }   -> { ok, data }
+ *   { type: 'testix.list',     payload: { schedules } }       -> { ok, data }
+ *   { type: 'testix.results',  payload: { url } }             -> { ok, data }
  */
 
-const NOTES_API = 'https://testix.com.ua/api/nz/schedule-notes/';
+const API_HOST = 'testix.com.ua';
+const NOTES_API = `https://${API_HOST}/api/nz/schedule-notes/`;
+const TESTIX_API = `https://${API_HOST}/api/nz/schedule-tests/`;
 
 const HANDLERS = {
   'notes.get': ({ schedule }) => postForm(`${NOTES_API}get`, { schedule }),
   'notes.save': ({ schedule, note }) => postForm(`${NOTES_API}save`, { schedule, note }),
+  'testix.get': ({ schedule }) => postForm(`${TESTIX_API}get`, { schedule }),
+  'testix.save': ({ schedule, url }) => postForm(`${TESTIX_API}save`, { schedule, url }),
+  'testix.list': ({ schedules }) => postForm(`${TESTIX_API}list`, { schedules }),
+  'testix.results': ({ url }) => getJson(url),
 };
+
+/**
+ * Fetch a teacher-supplied results link. Only the API host is allowed: it is the
+ * single cross-origin host in the manifest, and an unchecked URL here would turn
+ * the worker into an open proxy.
+ */
+async function getJson(url) {
+  let target;
+  try {
+    target = new URL(url);
+  } catch {
+    throw new Error('Посилання некоректне');
+  }
+  if (target.protocol !== 'https:' || target.hostname !== API_HOST) {
+    throw new Error(`Дозволені лише посилання з https://${API_HOST}`);
+  }
+
+  const response = await fetch(target.href, { headers: { Accept: 'application/json' } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('Сервер повернув не JSON');
+  }
+}
 
 async function postForm(url, data) {
   const body = new URLSearchParams();
