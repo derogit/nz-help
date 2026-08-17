@@ -866,6 +866,31 @@
   outline-offset: 1px;
 }
 
+/* Follows the last ticked lesson checkbox; JS writes left/top in page coordinates,
+   the transform lifts it above the box and centers it on the column. */
+.nz-lesson-bulk {
+  position: absolute;
+  z-index: var(--nz-z-launcher);
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+  animation: nz-lesson-bulk-in 140ms ease-out;
+}
+
+.nz-lesson-bulk[hidden] {
+  display: none;
+}
+
+.nz-lesson-bulk .nz-btn {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
+}
+
+@keyframes nz-lesson-bulk-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% + 6px));
+  }
+}
+
 /* Bare icon: no box, no label — the note glyph itself is the button. */
 .nz-note-btn {
   position: absolute;

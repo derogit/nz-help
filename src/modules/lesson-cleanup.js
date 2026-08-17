@@ -27,6 +27,54 @@
     );
   }
 
+  /**
+   * Floating "delete checked" button that hovers above the checkbox the teacher
+   * ticked last, so the action is right where the eyes already are.
+   */
+  const bubble = (() => {
+    let node = null;
+    let anchor = null;
+
+    function build() {
+      node = ui.el('div', { class: 'nz-root nz-lesson-bulk', hidden: true }, [
+        ui.button({ label: 'Видалити відмічене', variant: 'danger', onClick: removeSelected }),
+      ]);
+      document.body.append(node);
+
+      // Capture phase: the journal table scrolls inside its own container.
+      window.addEventListener('scroll', place, true);
+      window.addEventListener('resize', place);
+    }
+
+    /** Anchor to the last ticked box; if it was unticked, fall back to the rightmost one. */
+    function pickAnchor(box, checked) {
+      if (checked) {
+        anchor = box;
+        return;
+      }
+      if (anchor !== box) return;
+      const boxes = utils.qsa('.nz-lesson-check.is-checked');
+      anchor = boxes[boxes.length - 1] || null;
+    }
+
+    function place() {
+      if (!node || node.hidden || !anchor || !anchor.isConnected) return;
+      const rect = anchor.getBoundingClientRect();
+      node.style.left = `${rect.left + rect.width / 2 + window.scrollX}px`;
+      node.style.top = `${rect.top + window.scrollY - 8}px`;
+    }
+
+    function sync(box, checked) {
+      if (!node) build();
+      pickAnchor(box, checked);
+
+      node.hidden = !anchor;
+      if (!node.hidden) place();
+    }
+
+    return { sync };
+  })();
+
   /** Lesson columns live in <thead>; some journal views render that row in <tbody>. */
   function headerCells() {
     const inHead = utils.qsa('#journalList thead td.pt-point');
@@ -62,6 +110,7 @@
           const checked = box.classList.toggle('is-checked');
           box.setAttribute('aria-checked', String(checked));
           updateHint();
+          bubble.sync(box, checked);
         },
       });
 
