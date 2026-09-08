@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NZ Help by Testix",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Інструменти для швидкої роботи з електронним журналом nz.ua: масові операції з уроками, нотатки, швидкі відповіді.",
   "author": "Danylo Tkachuk",
   "icons": {
@@ -42,6 +42,7 @@
         "src/modules/lesson-columns.js",
         "src/modules/lesson-cleanup.js",
         "src/modules/homework-fill.js",
+        "src/modules/lesson-plan.js",
         "src/modules/homework-notes.js",
         "src/modules/homework-preview.js",
         "src/modules/testix-marks.js",

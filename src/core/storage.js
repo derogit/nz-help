@@ -15,6 +15,8 @@
     quickReplies: 'quickReplies',
     /** last room chosen in the "add lesson columns" dialog. */
     roomId: 'roomId',
+    /** { [journalId]: PlannedLesson[] } — topics and homework waiting for their lesson date. */
+    lessonPlans: 'lessonPlans',
     /** { [studentId]: cssColor } */
     studentColors: 'studentColors',
     /** boolean — collapsed state of the site sidebar. */
@@ -28,6 +30,7 @@
     [KEYS.modules]: 'sync',
     [KEYS.quickReplies]: 'sync',
     [KEYS.roomId]: 'sync',
+    [KEYS.lessonPlans]: 'local',
     [KEYS.studentColors]: 'local',
     [KEYS.sidebarCollapsed]: 'local',
     [KEYS.cookiesImported]: 'local',

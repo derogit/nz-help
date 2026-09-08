@@ -5,12 +5,53 @@
 (async () => {
   'use strict';
 
-  const { utils, storage, catalog, catalogDefaults } = NZ;
+  const { utils, storage, catalog, catalogDefaults, changelog = [], changelogUrl } = NZ;
   const { el } = utils;
 
   const enabled = { ...catalogDefaults(), ...(await storage.get(storage.KEYS.modules, {})) };
 
   document.getElementById('version').textContent = `Версія ${chrome.runtime.getManifest().version}`;
+
+  /* --- what's new --------------------------------------------------------- */
+
+  if (changelog.length) {
+    const format = new Intl.DateTimeFormat('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const release = (entry) =>
+      el('div', { class: 'release' }, [
+        el('p', { class: 'release__head' }, [
+          el('span', { class: 'release__version', text: entry.version }),
+          el('span', { class: 'release__date', text: format.format(new Date(`${entry.date}T00:00:00`)) }),
+        ]),
+        el('ul', { class: 'release__list' }, entry.changes.map((text) => el('li', { text }))),
+      ]);
+
+    const [latest, ...older] = changelog;
+
+    const parts = [
+      el('p', { class: 'nz-eyebrow', text: 'Що нового' }),
+      release(latest),
+      older.length
+        ? el('details', { class: 'release__older' }, [
+            el('summary', { text: 'Попередні версії' }),
+            ...older.map(release),
+          ])
+        : null,
+      changelogUrl
+        ? el('a', {
+            class: 'release__link',
+            href: changelogUrl,
+            target: '_blank',
+            rel: 'noopener',
+            text: 'Усі зміни на GitHub',
+          })
+        : null,
+    ].filter(Boolean);
+
+    const whatsNew = document.getElementById('whats-new');
+    whatsNew.append(...parts);
+    whatsNew.hidden = false;
+  }
 
   /* --- module toggles ----------------------------------------------------- */
 
@@ -56,6 +97,13 @@
       label: 'Швидкі відповіді',
       empty: [],
       count: (value) => `${(value || []).length} фраз`,
+    },
+    {
+      key: storage.KEYS.lessonPlans,
+      label: 'Заплановані теми і ДЗ',
+      empty: {},
+      count: (value) =>
+        `${Object.values(value || {}).reduce((sum, list) => sum + (list || []).length, 0)} уроків у планах`,
     },
     {
       key: storage.KEYS.studentColors,

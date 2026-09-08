@@ -784,7 +784,9 @@
 
 /* --- answer preview frame ------------------------------------------------ */
 
-.nz-modal--xl .nz-modal__body {
+/* The frame fills the dialog edge to edge — the padding belongs to text bodies,
+   not to every wide dialog. */
+.nz-modal__body:has(> .nz-frame__wrap) {
   padding: 0;
 }
 
@@ -1034,6 +1036,73 @@
 
 .nz-student-anchor {
   cursor: pointer;
+}
+
+/* --- planned lessons ----------------------------------------------------- */
+
+/* Ghost text inside the site's homework list: a topic that is queued but not
+   sent yet. Colours are literal — the cell lives outside .nz-root. */
+.nz-plan-ghost {
+  display: block;
+  color: #6a7480;
+  opacity: 0.55;
+  font-style: italic;
+  cursor: pointer;
+  transition: opacity 180ms;
+}
+
+.nz-plan-ghost:hover {
+  opacity: 0.85;
+}
+
+/* Written by the auto-publish pass, so the page need not be reloaded to see it. */
+.nz-plan-fresh {
+  display: block;
+}
+
+.nz-plan-fresh::before {
+  content: "\2713 ";
+  color: #187a4c;
+}
+
+/* Plan editor: one row per queued lesson, status on its own line below. */
+.nz-plan__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.nz-plan__row {
+  display: grid;
+  grid-template-columns: 88px 64px minmax(160px, 1.6fr) minmax(140px, 1.2fr) 28px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--nz-mist);
+}
+
+.nz-plan__row > * {
+  min-width: 0;
+}
+
+.nz-plan__date {
+  font-family: var(--nz-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--nz-ink-soft);
+}
+
+.nz-plan__status {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--nz-muted);
+}
+
+.nz-plan__status.is-warning {
+  color: var(--nz-pen);
 }
 
 /* --- responsive and motion preferences ---------------------------------- */

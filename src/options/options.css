@@ -34,6 +34,77 @@ body.nz-root {
   color: var(--nz-muted);
 }
 
+/* --- what's new --------------------------------------------------------- */
+
+/* .card sets display, so the hidden state has to be spelled out. */
+#whats-new[hidden] {
+  display: none;
+}
+
+.release {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.release + .release {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--nz-line);
+}
+
+.release__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+}
+
+.release__version {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.release__date {
+  font-family: var(--nz-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--nz-muted);
+}
+
+.release__list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--nz-ink-soft);
+}
+
+.release__older {
+  margin-top: 4px;
+  border-top: 1px solid var(--nz-line);
+  padding-top: 12px;
+}
+
+.release__older summary {
+  font-size: 13px;
+  color: var(--nz-muted);
+  cursor: pointer;
+}
+
+.release__older[open] summary {
+  margin-bottom: 12px;
+}
+
+.release__link {
+  align-self: flex-start;
+  font-size: 13px;
+  color: var(--nz-pen);
+}
+
 .groups {
   display: flex;
   flex-direction: column;
