@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NZ Help by Testix",
-  "version": "2.0.4",
+  "version": "2.0.4.1",
   "description": "Інструменти для швидкої роботи з електронним журналом nz.ua: масові операції з уроками, нотатки, швидкі відповіді.",
   "author": "Danylo Tkachuk",
   "icons": {

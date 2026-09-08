@@ -12,6 +12,8 @@
  *   summary  — one sentence, plain language
  *   where    — where in the journal it shows up
  *   enabled  — default state
+ *   settings — optional per-module options: { id, type, label, hint, default, min, max }.
+ *              Rendered by the options page, read by the module via NZ.settings.get().
  */
 (() => {
   'use strict';
@@ -58,6 +60,17 @@
       summary: 'Запам’ятовує теми та ДЗ наперед і публікує кожен урок сам, коли настає його дата.',
       where: 'Журнал класу',
       enabled: true,
+      settings: [
+        {
+          id: 'leadDays',
+          type: 'number',
+          label: 'Публікувати наперед, днів',
+          hint: 'За скільки днів до уроку тема і ДЗ з’являться на сайті. 0 — у день уроку.',
+          default: 1,
+          min: 0,
+          max: 30,
+        },
+      ],
     },
     {
       id: 'homework-fill',
@@ -118,6 +131,51 @@
   ];
 
   NZ.catalogById = (id) => NZ.catalog.find((entry) => entry.id === id) || null;
+
+  /** Bring a stored value back into what the catalog declared, or fall back to the default. */
+  function coerce(setting, value) {
+    // Nothing saved yet, or the field was simply cleared.
+    if (value === undefined || value === null || value === '') return setting.default;
+    if (setting.type !== 'number') return value;
+
+    const number = Math.round(Number(value));
+    if (!Number.isFinite(number)) return setting.default;
+
+    const min = setting.min ?? -Infinity;
+    const max = setting.max ?? Infinity;
+    return Math.min(Math.max(number, min), max);
+  }
+
+  /**
+   * Per-module options. Values are always read through the catalog, so a module
+   * never sees a missing, out-of-range or hand-edited value.
+   */
+  NZ.settings = {
+    coerce,
+
+    /** Catalog defaults with the user's saved values on top. */
+    async get(moduleId) {
+      const entry = NZ.catalogById(moduleId);
+      if (!entry || !entry.settings) return {};
+
+      const all = await NZ.storage.get(NZ.storage.KEYS.moduleSettings, {});
+      const saved = (all && all[moduleId]) || {};
+
+      return entry.settings.reduce((values, setting) => {
+        values[setting.id] = coerce(setting, saved[setting.id]);
+        return values;
+      }, {});
+    },
+
+    /** Merge values into one module's settings, leaving the other modules alone. */
+    async set(moduleId, values) {
+      const all = await NZ.storage.get(NZ.storage.KEYS.moduleSettings, {});
+      const next = all && typeof all === 'object' ? all : {};
+      next[moduleId] = { ...(next[moduleId] || {}), ...values };
+      await NZ.storage.set(NZ.storage.KEYS.moduleSettings, next);
+      return next[moduleId];
+    },
+  };
 
   /** Default enabled map, used before the user ever opens the options page. */
   NZ.catalogDefaults = () =>

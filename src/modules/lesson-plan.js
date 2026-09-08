@@ -14,11 +14,13 @@
 
   const ACTION_ID = 'lesson-plan';
   const LESSON_LINK = 'a.modal-box[href*="add-edit-home-task"]';
-  // Published a day early: the teacher usually prepares the evening before.
-  const LEAD_DAYS = 1;
 
-  /** Lessons of the open journal + the plan for it, kept in sync with the DOM. */
-  const state = { journalId: null, lessons: [], entries: [] };
+  /**
+   * Lessons of the open journal + the plan for it, kept in sync with the DOM.
+   * `leadDays` — how early a lesson goes live; the catalog default is a day,
+   * because the teacher usually prepares the evening before.
+   */
+  const state = { journalId: null, lessons: [], entries: [], leadDays: 1 };
   let listHost = null; // set while the plan dialog is open
 
   /* ------------------------------------------------------------------ *
@@ -178,12 +180,22 @@
     return new Date(year, month - 1, day).setHours(0, 0, 0, 0);
   }
 
-  /** Today, yesterday or tomorrow — time to put the lesson on the site. */
+  /** The lesson day is here or within the lead time — time to put it on the site. */
   function isDue(dottedDate) {
     const limit = new Date();
     limit.setHours(0, 0, 0, 0);
-    limit.setDate(limit.getDate() + LEAD_DAYS);
+    limit.setDate(limit.getDate() + state.leadDays);
     return dayOf(dottedDate) <= limit.getTime();
+  }
+
+  /** How the lead time reads for the user: "напередодні", "за 3 дні до" and so on. */
+  function leadPhrase(date = null) {
+    const days = state.leadDays;
+    if (days <= 0) return date ? `у день уроку — ${date}` : 'у день уроку';
+    if (days === 1) return date ? `напередодні ${date}` : 'напередодні своєї дати';
+
+    const counted = `за ${days} ${utils.plural(days, 'день', 'дні', 'днів')}`;
+    return date ? `${counted} до ${date}` : `${counted} до своєї дати`;
   }
 
   /* ------------------------------------------------------------------ *
@@ -193,7 +205,7 @@
   function ghost(entry, text) {
     return ui.el('span', {
       class: 'nz-plan-ghost',
-      title: `Заплановано на ${entry.date}. Опублікується автоматично — натисніть, щоб змінити.`,
+      title: `Заплановано на ${entry.date}. Опублікується ${leadPhrase(entry.date)} — натисніть, щоб змінити.`,
       text,
       onClick: (e) => {
         e.preventDefault();
@@ -355,8 +367,8 @@
     const lesson = lessonByDate(entry.date);
     if (!lesson) return { text: 'уроку з такою датою немає в журналі', warning: true };
     if (entry.conflict) return { text: 'тему вже заповнено на сайті — план не опублікується', warning: true };
-    if (isDue(entry.date)) return { text: 'дата настала — опублікуємо при наступному відкритті журналу', warning: false };
-    return { text: `опублікується автоматично напередодні ${entry.date}`, warning: false };
+    if (isDue(entry.date)) return { text: 'час настав — опублікуємо при наступному відкритті журналу', warning: false };
+    return { text: `опублікується автоматично ${leadPhrase(entry.date)}`, warning: false };
   }
 
   function planRow(entry) {
@@ -486,7 +498,10 @@
         ui.el('p', { class: 'nz-eyebrow', text: 'Заплановані уроки' }),
         ui.el('p', {
           class: 'nz-text nz-text--muted',
-          text: 'Тему й ДЗ можна змінити просто в рядку. Кожен урок опублікується сам напередодні своєї дати, якщо тема на сайті ще порожня.',
+          text:
+            'Тему й ДЗ можна змінити просто в рядку. Кожен урок опублікується сам ' +
+            `${leadPhrase()}, якщо тема на сайті ще порожня. ` +
+            'За скільки днів публікувати — у налаштуваннях розширення.',
         }),
         listHost,
       ],
@@ -581,6 +596,7 @@
       if (!state.lessons.length) return;
 
       state.journalId = String(page.journalId || state.lessons[0].journal);
+      state.leadDays = (await NZ.settings.get(ACTION_ID)).leadDays ?? state.leadDays;
       state.entries = await loadEntries(state.journalId);
 
       ui.launcher.add({

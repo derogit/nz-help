@@ -210,6 +210,57 @@ body.nz-root {
   outline-offset: 2px;
 }
 
+/* --- per-module options ------------------------------------------------- */
+
+.module__settings {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.setting__label {
+  font-size: 13px;
+}
+
+.setting__control {
+  width: 84px;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--nz-ink);
+  background: var(--nz-paper);
+  border: 1px solid var(--nz-line);
+  border-radius: var(--nz-radius-sm);
+}
+
+.setting__control:focus-visible {
+  outline: 2px solid var(--nz-pen);
+  outline-offset: 1px;
+}
+
+.setting__hint {
+  font-size: 12px;
+  color: var(--nz-muted);
+}
+
 .data {
   display: flex;
   flex-direction: column;

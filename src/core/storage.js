@@ -11,6 +11,8 @@
   const KEYS = {
     /** { [moduleId]: boolean } — which modules the user keeps enabled. */
     modules: 'modules',
+    /** { [moduleId]: { [settingId]: value } } — per-module options declared in the catalog. */
+    moduleSettings: 'moduleSettings',
     /** string[] — quick reply phrases. */
     quickReplies: 'quickReplies',
     /** last room chosen in the "add lesson columns" dialog. */
@@ -28,6 +30,7 @@
   // Small, user-level preferences sync across devices; bulk/local state stays local.
   const AREAS = {
     [KEYS.modules]: 'sync',
+    [KEYS.moduleSettings]: 'sync',
     [KEYS.quickReplies]: 'sync',
     [KEYS.roomId]: 'sync',
     [KEYS.lessonPlans]: 'local',

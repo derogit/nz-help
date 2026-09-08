@@ -5,10 +5,11 @@
 (async () => {
   'use strict';
 
-  const { utils, storage, catalog, catalogDefaults, changelog = [], changelogUrl } = NZ;
+  const { utils, storage, catalog, catalogDefaults, settings, changelog = [], changelogUrl } = NZ;
   const { el } = utils;
 
   const enabled = { ...catalogDefaults(), ...(await storage.get(storage.KEYS.modules, {})) };
+  const values = { ...(await storage.get(storage.KEYS.moduleSettings, {})) };
 
   document.getElementById('version').textContent = `Версія ${chrome.runtime.getManifest().version}`;
 
@@ -55,6 +56,33 @@
 
   /* --- module toggles ----------------------------------------------------- */
 
+  /** One catalog-declared option of a module: label, control, hint under it. */
+  function settingRow(entry, setting) {
+    const control = el('input', {
+      class: 'setting__control',
+      type: setting.type === 'number' ? 'number' : 'text',
+      min: setting.min === undefined ? null : String(setting.min),
+      max: setting.max === undefined ? null : String(setting.max),
+      value: String(settings.coerce(setting, values[entry.id]?.[setting.id])),
+      onChange: async (event) => {
+        // Whatever was typed comes back through the catalog, so the field always
+        // shows the value the module will actually use.
+        const value = settings.coerce(setting, event.target.value);
+        event.target.value = String(value);
+        values[entry.id] = { ...(values[entry.id] || {}), [setting.id]: value };
+        await storage.set(storage.KEYS.moduleSettings, values);
+      },
+    });
+
+    return el('div', { class: 'setting' }, [
+      el('label', { class: 'setting__head' }, [
+        el('span', { class: 'setting__label', text: setting.label }),
+        control,
+      ]),
+      setting.hint ? el('span', { class: 'setting__hint', text: setting.hint }) : null,
+    ]);
+  }
+
   function moduleRow(entry) {
     const checkbox = el('input', {
       type: 'checkbox',
@@ -70,6 +98,9 @@
       el('label', { class: 'switch' }, [checkbox, el('span', { class: 'switch__track' })]),
       el('p', { class: 'module__summary', text: entry.summary }),
       el('span', { class: 'module__where', text: entry.where }),
+      entry.settings
+        ? el('div', { class: 'module__settings' }, entry.settings.map((setting) => settingRow(entry, setting)))
+        : null,
     ]);
   }
 
