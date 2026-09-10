@@ -2,7 +2,8 @@
  * Module: delete selected lessons.
  *
  * Puts a checkbox into every lesson column header and deletes the checked ones
- * in one pass, instead of opening each lesson separately.
+ * in one pass, instead of opening each lesson separately. A master toggle next
+ * to the lesson columns ticks or clears them all at once.
  */
 (() => {
   'use strict';
@@ -11,20 +12,46 @@
   const { utils, net, ui } = NZ;
 
   const ACTION_ID = 'lesson-cleanup';
+  const SELECT_ALL_ID = 'lesson-select-all';
+
+  const boxes = () => utils.qsa('.nz-lesson-check');
+  const checkedBoxes = () => utils.qsa('.nz-lesson-check.is-checked');
 
   function selected() {
-    return utils.qsa('.nz-lesson-check.is-checked').map((box) => ({
+    return checkedBoxes().map((box) => ({
       scheduleId: box.dataset.scheduleId,
       label: box.dataset.label || box.dataset.scheduleId,
     }));
   }
 
-  function updateHint() {
-    const count = selected().length;
+  function setChecked(box, checked) {
+    box.classList.toggle('is-checked', checked);
+    box.setAttribute('aria-checked', String(checked));
+  }
+
+  /** One place that redraws everything derived from the ticks. */
+  function updateState() {
+    const count = checkedBoxes().length;
+    const total = boxes().length;
+
     ui.launcher.setHint(
       ACTION_ID,
       count ? `Вибрано ${count} ${utils.plural(count, 'урок', 'уроки', 'уроків')}` : 'Спочатку відмітьте уроки в шапці журналу'
     );
+    ui.launcher.setHint(SELECT_ALL_ID, `Відмічено ${count} з ${total}`);
+    master.sync();
+  }
+
+  /** Tick every lesson, or clear them all when nothing is left to tick. */
+  function toggleAll() {
+    const all = boxes();
+    if (!all.length) return;
+
+    const next = checkedBoxes().length < all.length;
+    for (const box of all) setChecked(box, next);
+
+    updateState();
+    bubble.refresh();
   }
 
   /**
@@ -53,8 +80,12 @@
         return;
       }
       if (anchor !== box) return;
-      const boxes = utils.qsa('.nz-lesson-check.is-checked');
-      anchor = boxes[boxes.length - 1] || null;
+      anchor = lastChecked();
+    }
+
+    function lastChecked() {
+      const ticked = checkedBoxes();
+      return ticked[ticked.length - 1] || null;
     }
 
     function place() {
@@ -64,15 +95,74 @@
       node.style.top = `${rect.top + window.scrollY - 8}px`;
     }
 
-    function sync(box, checked) {
-      if (!node) build();
-      pickAnchor(box, checked);
-
+    function show() {
       node.hidden = !anchor;
       if (!node.hidden) place();
     }
 
-    return { sync };
+    function sync(box, checked) {
+      if (!node) build();
+      pickAnchor(box, checked);
+      show();
+    }
+
+    /** Nobody clicked a particular box (select all / clear all) — re-derive the anchor. */
+    function refresh() {
+      if (!node) build();
+      anchor = lastChecked();
+      show();
+    }
+
+    return { sync, refresh };
+  })();
+
+  /**
+   * Master toggle. Lives in the header cell right before the lesson columns, so
+   * it lines up with the row of lesson checkboxes it controls.
+   */
+  const master = (() => {
+    let node = null;
+
+    function build() {
+      node = ui.el(
+        'button',
+        {
+          type: 'button',
+          class: 'nz-select-all',
+          role: 'checkbox',
+          'aria-checked': 'false',
+          title: 'Відмітити всі уроки',
+          onClick: (e) => {
+            e.preventDefault();
+            toggleAll();
+          },
+        },
+        [ui.el('span', { class: 'nz-select-all__box' }), ui.el('span', { text: 'Всі' })]
+      );
+      return node;
+    }
+
+    function mount() {
+      // The cell before the first lesson column — the student name header.
+      const host = headerCells()[0]?.previousElementSibling;
+      if (!host || host.querySelector('.nz-select-all')) return;
+      host.append(build());
+    }
+
+    function sync() {
+      if (!node) return;
+
+      const total = boxes().length;
+      const count = checkedBoxes().length;
+      const all = total > 0 && count === total;
+
+      node.classList.toggle('is-checked', all);
+      node.classList.toggle('is-partial', count > 0 && !all);
+      node.setAttribute('aria-checked', all ? 'true' : count ? 'mixed' : 'false');
+      node.title = all ? 'Зняти всі відмітки' : 'Відмітити всі уроки';
+    }
+
+    return { mount, sync };
   })();
 
   /** Lesson columns live in <thead>; some journal views render that row in <tbody>. */
@@ -107,9 +197,9 @@
         dataset: { scheduleId, label: link.textContent.trim() },
         onClick: (e) => {
           e.preventDefault();
-          const checked = box.classList.toggle('is-checked');
-          box.setAttribute('aria-checked', String(checked));
-          updateHint();
+          const checked = !box.classList.contains('is-checked');
+          setChecked(box, checked);
+          updateState();
           bubble.sync(box, checked);
         },
       });
@@ -173,6 +263,15 @@
         utils.warn('Шапку журналу не розпізнано — чекбокси уроків не додано');
         return;
       }
+
+      master.mount();
+
+      ui.launcher.add({
+        id: SELECT_ALL_ID,
+        label: 'Відмітити всі уроки',
+        hint: `Відмічено 0 з ${boxes().length}`,
+        onClick: toggleAll,
+      });
 
       ui.launcher.add({
         id: ACTION_ID,

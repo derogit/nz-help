@@ -868,6 +868,89 @@
   outline-offset: 1px;
 }
 
+/* Master toggle: sits in the header cell before the lesson columns, so it needs
+   a label — unlike the bare boxes it controls, it has no column above it. */
+#journalList td:has(> .nz-select-all) {
+  overflow: visible;
+}
+
+.nz-select-all {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  box-shadow: none;
+  color: #6b7480;
+  font: 600 10px/14px system-ui, -apple-system, "Segoe UI", sans-serif;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: color 140ms, border-color 140ms;
+}
+
+.nz-select-all__box {
+  display: block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #9aa3ad;
+  border-radius: 3px;
+  background: #fff;
+  color: transparent;
+  font: 700 9px/10px system-ui, -apple-system, "Segoe UI", sans-serif;
+  text-align: center;
+  transition: background 140ms, border-color 140ms;
+}
+
+.nz-select-all__box::before {
+  content: "\2713";
+  display: block;
+}
+
+.nz-select-all:hover {
+  border-color: #d6323c;
+  color: #d6323c;
+}
+
+.nz-select-all:hover .nz-select-all__box {
+  border-color: #d6323c;
+}
+
+.nz-select-all.is-checked,
+.nz-select-all.is-partial {
+  color: #d6323c;
+}
+
+.nz-select-all.is-checked .nz-select-all__box {
+  background: #d6323c !important;
+  border-color: #d6323c;
+  color: #fff;
+}
+
+/* Some but not all ticked — a dash, the way an indeterminate checkbox reads. */
+.nz-select-all.is-partial .nz-select-all__box {
+  border-color: #d6323c;
+  color: #d6323c;
+}
+
+.nz-select-all.is-partial .nz-select-all__box::before {
+  content: "\2013";
+}
+
+.nz-select-all:focus-visible {
+  outline: 2px solid #d6323c;
+  outline-offset: 1px;
+}
+
 /* Follows the last ticked lesson checkbox; JS writes left/top in page coordinates,
    the transform lifts it above the box and centers it on the column. */
 .nz-lesson-bulk {
