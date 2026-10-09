@@ -46,6 +46,38 @@
     return node;
   }
 
+  /**
+   * Checkbox with a label. A <button role="checkbox">, not an <input>: nz.ua
+   * hides bare checkboxes. Read and set the state through node.checked.
+   */
+  function checkbox({ label, hint, checked = false, onChange } = {}) {
+    const node = el('button', { class: 'nz-check', type: 'button', role: 'checkbox' }, [
+      el('span', { class: 'nz-check__box' }),
+      el('span', { class: 'nz-check__text' }, [
+        el('span', { class: 'nz-check__label', text: label }),
+        hint ? el('span', { class: 'nz-field__hint', text: hint }) : null,
+      ]),
+    ]);
+
+    const set = (value) => {
+      node.classList.toggle('is-checked', value);
+      node.setAttribute('aria-checked', String(value));
+    };
+
+    Object.defineProperty(node, 'checked', {
+      get: () => node.getAttribute('aria-checked') === 'true',
+      set: (value) => set(Boolean(value)),
+    });
+
+    node.addEventListener('click', () => {
+      node.checked = !node.checked;
+      onChange?.(node.checked);
+    });
+
+    set(Boolean(checked));
+    return node;
+  }
+
   /** Label + optional hint + control, laid out consistently. */
   function field({ label, hint, control, counter }) {
     const id = control.id || nextId('nz-field');
@@ -440,6 +472,7 @@
     input,
     textarea,
     select,
+    checkbox,
     field,
     lineCounter,
     modal,

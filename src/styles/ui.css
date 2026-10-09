@@ -255,6 +255,72 @@
   color: var(--nz-muted);
 }
 
+.nz-root .nz-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nz-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nz-root .nz-check:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.nz-root .nz-check__box {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border: 1px solid #9aa3ad;
+  border-radius: 4px;
+  background: var(--nz-paper);
+  color: transparent;
+  font: 700 11px/14px var(--nz-font);
+  text-align: center;
+  transition: background var(--nz-speed), border-color var(--nz-speed);
+}
+
+.nz-root .nz-check__box::before {
+  content: "\2713";
+  display: block;
+}
+
+.nz-root .nz-check:hover:not(:disabled) .nz-check__box {
+  border-color: var(--nz-ink);
+}
+
+.nz-root .nz-check.is-checked .nz-check__box {
+  background: var(--nz-ink);
+  border-color: var(--nz-ink);
+  color: #fff;
+}
+
+.nz-root .nz-check:focus-visible {
+  outline: none;
+}
+
+.nz-root .nz-check:focus-visible .nz-check__box {
+  box-shadow: 0 0 0 3px rgba(21, 24, 29, 0.15);
+}
+
+.nz-root .nz-check__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nz-root .nz-check__label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .nz-row {
   display: flex;
   flex-wrap: wrap;

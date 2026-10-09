@@ -8,7 +8,10 @@
   const { utils, storage, catalog, catalogDefaults, settings, changelog = [], changelogUrl } = NZ;
   const { el } = utils;
 
-  const enabled = { ...catalogDefaults(), ...(await storage.get(storage.KEYS.modules, {})) };
+  // Only the teacher's own choices are stored, so a later change of a default
+  // still reaches modules they never touched.
+  const chosen = { ...(await storage.get(storage.KEYS.modules, {})) };
+  const enabled = { ...catalogDefaults(), ...chosen };
   const values = { ...(await storage.get(storage.KEYS.moduleSettings, {})) };
 
   document.getElementById('version').textContent = `Версія ${chrome.runtime.getManifest().version}`;
@@ -88,8 +91,8 @@
       type: 'checkbox',
       checked: enabled[entry.id] !== false,
       onChange: async (event) => {
-        enabled[entry.id] = event.target.checked;
-        await storage.set(storage.KEYS.modules, enabled);
+        enabled[entry.id] = chosen[entry.id] = event.target.checked;
+        await storage.set(storage.KEYS.modules, chosen);
       },
     });
 
