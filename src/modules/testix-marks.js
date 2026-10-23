@@ -136,9 +136,31 @@
     return String(Math.min(Math.max(Math.round(grade), min), max));
   }
 
+  /** A journal cell holds a grade, not a note like «н» or «пп». */
+  function isNumericMark(value) {
+    return /^\d+(?:[.,]\d+)?$/.test(value);
+  }
+
+  /**
+   * What to do with one row, given what the journal cell already holds:
+   *   'set'   — write the grade
+   *   'same'  — the journal already has this grade
+   *   'text'  — the cell holds a note («н», «пп»…); only a grade typed by hand replaces it
+   *   'empty' — no grade to write
+   */
+  function decide(current, grade, manual) {
+    if (!grade) return 'empty';
+    if (!current) return 'set';
+    if (!isNumericMark(current)) return manual ? 'set' : 'text';
+    return Number(current.replace(',', '.')) === Number(grade) ? 'same' : 'set';
+  }
+
   function openDialog(scheduleId, dateLabel) {
     const students = journalStudents();
     const index = columnIndex(scheduleId);
+
+    /** What the journal shows for this student in this lesson's column right now. */
+    const currentMark = (student) => (student ? markInput(student, index)?.value?.trim() || '' : '');
 
     const urlInput = ui.input({
       type: 'url',
@@ -304,23 +326,37 @@
           hint,
         ]);
 
+        // A grade the teacher typed is a deliberate choice: it may replace «н» and similar notes.
+        let manual = false;
+
         const refresh = () => {
           const student = students.find((item) => item.id === select.value);
-          const current = student ? markInput(student, index)?.value?.trim() : '';
+          const current = currentMark(student);
+          const value = grade.value.trim();
+          const action = decide(current, value, manual);
+
           row.classList.toggle('is-unmatched', !select.value);
           hint.textContent = !select.value
             ? 'учня не знайдено — оберіть вручну'
-            : current
-              ? `у журналі вже ${current}`
-              : '';
-          hint.classList.toggle('is-warning', !select.value || Boolean(current));
+            : action === 'same'
+              ? `у журналі вже ${current} — без змін`
+              : action === 'text'
+                ? `у журналі «${current}» — не перезапишеться; змініть оцінку вручну, щоб виставити`
+                : action === 'set' && current
+                  ? `у журналі «${current}» → буде ${value}`
+                  : '';
+          hint.classList.toggle('is-warning', !select.value || action === 'text' || (action === 'set' && Boolean(current)));
         };
 
         select.addEventListener('change', refresh);
+        grade.addEventListener('input', () => {
+          manual = true;
+          refresh();
+        });
         refresh();
 
         rowsHost.append(row);
-        rows.push({ select, grade });
+        rows.push({ select, grade, isManual: () => manual });
       }
 
       apply.hidden = false;
@@ -333,15 +369,27 @@
         return;
       }
 
-      const planned = rows
-        .map(({ select, grade }) => ({
-          student: students.find((item) => item.id === select.value),
-          grade: grade.value.trim(),
-        }))
-        .filter((item) => item.student && item.grade);
+      const decided = rows
+        .map(({ select, grade, isManual }) => {
+          const student = students.find((item) => item.id === select.value);
+          const value = grade.value.trim();
+          return { student, grade: value, action: decide(currentMark(student), value, isManual()) };
+        })
+        .filter((item) => item.student);
+
+      const planned = decided.filter((item) => item.action === 'set');
+      const same = decided.filter((item) => item.action === 'same').length;
+      const text = decided.filter((item) => item.action === 'text').length;
+
+      const skippedNote = [
+        same ? `${same} ${utils.plural(same, 'оцінка вже стоїть', 'оцінки вже стоять', 'оцінок уже стоять')}` : '',
+        text ? `${text} ${utils.plural(text, 'клітинку', 'клітинки', 'клітинок')} з «н» чи іншою позначкою не чіпали` : '',
+      ]
+        .filter(Boolean)
+        .join(', ');
 
       if (!planned.length) {
-        ui.toast('Немає жодної оцінки для виставлення.', { type: 'info' });
+        ui.toast(skippedNote ? `Нічого виставляти: ${skippedNote}.` : 'Немає жодної оцінки для виставлення.', { type: 'info' });
         return;
       }
 
@@ -374,7 +422,11 @@
         return;
       }
 
-      ui.toast(`Виставлено ${planned.length} ${utils.plural(planned.length, 'оцінку', 'оцінки', 'оцінок')}.`, { type: 'success' });
+      ui.toast(
+        `Виставлено ${planned.length} ${utils.plural(planned.length, 'оцінку', 'оцінки', 'оцінок')}` +
+          (skippedNote ? `; ${skippedNote}.` : '.'),
+        { type: 'success' }
+      );
       dialog.close();
     }
   }
