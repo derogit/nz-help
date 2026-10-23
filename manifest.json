@@ -28,6 +28,12 @@
   "content_scripts": [
     {
       "matches": ["https://nz.ua/*"],
+      "run_at": "document_start",
+      "css": ["src/styles/marks-hidden.css"],
+      "js": ["src/content/marks-hidden-early.js"]
+    },
+    {
+      "matches": ["https://nz.ua/*"],
       "run_at": "document_idle",
       "css": ["src/styles/ui.css"],
       "js": [
@@ -39,6 +45,7 @@
         "src/core/registry.js",
         "src/modules/site-tweaks.js",
         "src/modules/sidebar-toggle.js",
+        "src/modules/marks-hidden.js",
         "src/modules/lesson-columns.js",
         "src/modules/lesson-cleanup.js",
         "src/modules/lesson-reschedule.js",

@@ -38,6 +38,15 @@
       enabled: true,
     },
     {
+      // Default is mirrored in src/content/marks-hidden-early.js.
+      id: 'marks-hidden',
+      group: 'Інтерфейс журналу',
+      title: 'Режим демонстрації',
+      summary: 'Розмиває всі оцінки в журналі, щоб показати його на проєкторі чи спільному екрані.',
+      where: 'Журнал класу',
+      enabled: true,
+    },
+    {
       id: 'lesson-columns',
       group: 'Уроки',
       title: 'Додавання стовпчиків уроків',

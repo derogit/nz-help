@@ -23,6 +23,8 @@
     studentColors: 'studentColors',
     /** boolean — collapsed state of the site sidebar. */
     sidebarCollapsed: 'sidebarCollapsed',
+    /** boolean — demo mode: marks blurred. Also read by src/content/marks-hidden-early.js. */
+    marksHidden: 'marksHidden',
     /** boolean — legacy Tampermonkey cookies already imported. */
     cookiesImported: 'cookiesImported',
   };
@@ -36,6 +38,7 @@
     [KEYS.lessonPlans]: 'local',
     [KEYS.studentColors]: 'local',
     [KEYS.sidebarCollapsed]: 'local',
+    [KEYS.marksHidden]: 'local',
     [KEYS.cookiesImported]: 'local',
   };
 

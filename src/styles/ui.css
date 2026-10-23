@@ -1298,12 +1298,58 @@
   font-weight: 600;
 }
 
+/* --- demo mode indicator ------------------------------------------------- */
+
+/* Sits to the left of the NZ button: 20px offset + 46px button + 12px gap. */
+.nz-marks-pill {
+  position: fixed;
+  right: 78px;
+  bottom: 27px;
+  z-index: var(--nz-z-launcher);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px 5px 12px;
+  border-radius: 999px;
+  background: var(--nz-paper);
+  box-shadow: var(--nz-shadow-sm);
+  font-size: 12.5px;
+}
+
+.nz-marks-pill[hidden] {
+  display: none;
+}
+
+.nz-marks-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--nz-pen);
+}
+
+.nz-marks-pill__action {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 999px;
+  background: var(--nz-mist);
+  color: var(--nz-ink);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background var(--nz-speed);
+}
+
+.nz-marks-pill__action:hover {
+  background: var(--nz-line);
+}
+
 /* --- responsive and motion preferences ---------------------------------- */
 
 @media (max-width: 640px) {
   .nz-overlay { padding: 12px; }
   .nz-modal__body { padding: 14px; }
   .nz-launcher { right: 12px; bottom: 12px; }
+  .nz-marks-pill { right: 70px; bottom: 19px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
